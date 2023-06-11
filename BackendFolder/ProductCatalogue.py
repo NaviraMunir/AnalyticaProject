@@ -15,7 +15,7 @@ from pmdarima.arima import ADFTest
 import requests
 import re
 import json
-import mflow
+import mlflow
 
 mlflow.set_experiment("Analytica Experiments")
 
@@ -103,8 +103,8 @@ class ProductCatalouge:
                 pricelist = pricelist[-12:]
             data = pd.DataFrame(pricelist, columns=['Monthly Prices'])
             
-            with mflow.start_run(run_name="forecast"):
-                mflow.log_param("product_name", productname)
+            with mlflow.start_run(run_name="forecast"):
+                mlflow.log_param("product_name", productname)
                 
                 # Predict next month sale based on previous 12 months data using auto arima model
                 model = auto_arima(data, start_p=1, start_q=1,
@@ -121,8 +121,8 @@ class ProductCatalouge:
                 pricelist.pop(0)
                 pricelist.append(int(prediction["Prediction"].iloc[0]))
                 pricelist = pricelist[-9:]
-                mflow.log_param("future_forecast", future_forecast.tolist())
-                mflow.log_param("updated_pricelist", pricelist)
+                mlflow.log_param("future_forecast", future_forecast.tolist())
+                mlflow.log_param("updated_pricelist", pricelist)
                 
                 return pricelist
 

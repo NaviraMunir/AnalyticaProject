@@ -1,0 +1,25 @@
+# Use an official Python runtime as the base image
+FROM python:3.9
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the requirements.txt file to the container
+COPY requirements.txt .
+
+RUN pip install --upgrade pip
+# Install Python dependencies
+RUN pip install -r requirements.txt
+
+# Copy the entire backend directory to the container
+COPY . .
+
+# Expose port 5000
+EXPOSE 5000
+
+# Set environment variables if needed
+# ENV VARIABLE_NAME=value
+
+# RUN mlflow server --port 8000
+# Start the Flask server
+CMD ["python", "server.py"]

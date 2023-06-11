@@ -4,7 +4,7 @@
   "private": false,
   "author": "Creative Tim",
   "license": "See license in https://www.creative-tim.com/license",
-  "proxy": "https://localhost:5000",
+  "proxy": "http://backend:5000",
   "description": "React version of Material Dashboard 2 by Creative Tim",
   "bugs": {
     "url": "https://github.com/creativetimofficial/material-dashboard-react/issues"

@@ -45,7 +45,7 @@ function Basic() {
 
   // pass data to login api and get response
   const handleSubmit = (userrole) => {
-    axios.post("http://127.0.0.1:5000/login", { email, password,userrole })
+    axios.post("http://backend:5000/login", { email, password,userrole })
     .then((response) => {
       console.log(response);
       if (response.data.data === "failure") {

@@ -15,6 +15,10 @@ from pmdarima.arima import ADFTest
 import requests
 import re
 import json
+import mflow
+
+mlflow.set_experiment("Analytica Experiments")
+
 
 class ProductCatalouge:
     def __init__(self):
@@ -85,7 +89,7 @@ class ProductCatalouge:
         responsedata = {"labels": labels, "datasets": datasets}
         return responsedata
 
-    def getforecast(self, productname):
+    def getforecast(self,productname):
         pricelist = []
         if productname != None:
             if productname == "Mobiles":
@@ -98,25 +102,29 @@ class ProductCatalouge:
                 pricelist = self.HomeAppliances
                 pricelist = pricelist[-12:]
             data = pd.DataFrame(pricelist, columns=['Monthly Prices'])
-            # predict next month sale based on previous 12 months data using auto arima model
-            model = auto_arima(data, start_p=1, start_q=1,
-                               test='adf',
-                               max_p=3, max_q=3, m=12,
-                               start_P=0, seasonal=False,
-                               d=1, D=1, trace=True,
-                               error_action='ignore',
-                               suppress_warnings=True,
-                               stepwise=True)
-            model.fit(data)
-            future_forecast = model.predict(n_periods=9)
-            #print(future_forecast)
-            prediction = pd.DataFrame(future_forecast, columns=['Prediction'])
-            pricelist.pop(0)
-            pricelist.append(int(prediction["Prediction"].iloc[0]))
-            pricelist=pricelist[-9:]
-            #append first value of future forecast to pricelist
-            print(pricelist)
-            return pricelist
+            
+            with mflow.start_run(run_name="forecast"):
+                mflow.log_param("product_name", productname)
+                
+                # Predict next month sale based on previous 12 months data using auto arima model
+                model = auto_arima(data, start_p=1, start_q=1,
+                                   test='adf',
+                                   max_p=3, max_q=3, m=12,
+                                   start_P=0, seasonal=False,
+                                   d=1, D=1, trace=True,
+                                   error_action='ignore',
+                                   suppress_warnings=True,
+                                   stepwise=True)
+                model.fit(data)
+                future_forecast = model.predict(n_periods=9)
+                prediction = pd.DataFrame(future_forecast, columns=['Prediction'])
+                pricelist.pop(0)
+                pricelist.append(int(prediction["Prediction"].iloc[0]))
+                pricelist = pricelist[-9:]
+                mflow.log_param("future_forecast", future_forecast.tolist())
+                mflow.log_param("updated_pricelist", pricelist)
+                
+                return pricelist
 
     def getSalesforecast(self, productname):
         pricelist = []
@@ -269,5 +277,6 @@ class ProductCatalouge:
         # return a single dictionary containing all the counts
         return {'age_group': age_group_counts, 'gender': gender_counts, 'city': city_counts}
 
-
+p=ProductCatalouge()
+p.getDemographics("Mobiles")
 

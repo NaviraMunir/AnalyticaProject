@@ -1,0 +1,6 @@
+[core]
+    remote = gdrive
+['remote "origin"']
+    url = https://github.com/NaviraMunir/AnalyticaProject.git
+['remote "gdrive"']
+    url = gdrive://1BTCj7WhU4RLetD_W0C1cDqDmlgi00lCg
